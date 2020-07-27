@@ -1,1 +1,2 @@
 # project
+Калькулятор на Javascript
