@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset="utf-8">
+  <title>calc</title>
+  <style type="text/css">
+ 
+  button{width:100px; height:70px; font-size:24px; margin:2px; padding:0; border:1 solid #333;}
+  input{width:301px; height:60px; font-size:28px;margin:2px;}
+  #result{height:144px;float:right;}
+  .content{width:312px; height:515px; background:#333;left:50%; margin-left:-171px; position:relative;padding:3px;  font-size: 0;}
+  </style>
+
+ </head>
+ <body>
+
+ <div class="content">
+<div class="itog">
+
+</div>
+<div class="vvod">
+<input type="text" id="res" value="" placeholder="0"	 autofocus  type="number">
+</div>
+<div class="buttons">
+<button class="butt" value="1">
+1
+</button>
+<button class="butt" value="2">
+2
+</button>
+<button class="butt" value="3">
+3
+</button>
+<button class="butt" value="4">
+4
+</button>
+<button class="butt" value="5">
+5
+</button>
+<button class="butt" value="6">
+6
+</button>
+<button class="butt" value="7">
+7
+</button>
+<button class="butt" value="8">
+8
+</button>
+<button class="butt" value="9">
+9
+</button>
+<button class="butt zero" value="0">
+0
+</button>
+<button class="butt" value=".">
+.
+</button>
+<button id="clear" >
+C
+</button>
+<button class="butt" value="+">
++
+</button>
+
+<button class="butt" value="-">
+-
+</button>
+<button id="result" value="=">
+=
+</button>
+<button class="mlt butt" value="*">
+*
+</button>
+
+<button class="dvd butt" value="/">
+/
+</button>
+
+
+
+</div>
+</div>
+     <script>
+window.onload = function() {
+	(function(){"use strict";
+	
+	let butt = document.querySelectorAll('.butt');//кнопка калькулятора
+	let summ =	document.getElementById('res');//текстовое поле калькулятора
+	let result = document.getElementById('result'); //кнопка "="
+	let	simbols = ["+","-","*","/","."];
+	let simbolsReg = /[\+\-/*]/g;
+	let	numbers = /[0-9]/g;
+	let	dotSimbols = /[.]/g;
+	let zeroNumber = /[0]/g;
+	
+	//Проверяем первый символ в текстовом поле
+	function checkSimbol(simb) {
+		return simb == summ.value[0];
+	};
+	
+	//если первый символ не цифра, то прибавляем ноль к значению в текстовом поле
+	function checkFirstSimbolTrue (){ if 
+		(simbols.some(checkSimbol)==true)
+		{summ.value = "0"+summ.value;
+	}
+	};
+	
+	//Проверяем последние два символа в текстовом поле на совпадения с математическими операторами
+	function checkLastSimbol(simbl) {
+		return simbl == summ.value.slice(-1);
+	};
+	function check2LastSimbol(simbl) {
+		return simbl == summ.value.slice(-2,-1);
+	};
+	
+	//если оба последних символа являются не цифрами, то удаляем предпоследний
+	function checkLastSimbolTrue (){ if 
+		(simbols.some(checkLastSimbol)==true&&simbols.some(check2LastSimbol)==true)
+		{
+		summ.value = summ.value.slice(0,-2)+summ.value.slice(-1);
+		};
+	};
+	
+	//Проверяем, есть ли ноль после математических сиволов и до цифр, если есть удаляем его
+	function checkLastNumbers(){
+		let last1Numbers = summ.value.split('').splice(-1,1);
+		numbers.lastIndex = 0;
+		last1Numbers = numbers.test(last1Numbers);
+		
+		let last2Numbers = summ.value.split('').splice(-2,1);
+		zeroNumber.lastIndex = 0;
+		last2Numbers = zeroNumber.test(last2Numbers);
+		
+		let last3Numbers = summ.value.split('').splice(-3,1);
+		simbolsReg.lastIndex = 0;
+		last3Numbers = simbolsReg.test(last3Numbers);
+		
+		if (last1Numbers==true&&last2Numbers==true&&last3Numbers==true){
+			summ.value = summ.value.slice(0,-2)+summ.value.slice(-1);
+		};
+	};
+	
+	//Проверяем колчество точек между математическими операторами, если больше 2, то удаляем вторую
+	function checkDotCount (){
+		let deleteNumbers = summ.value.replace(numbers, '');
+		let doubleDot = /\.{2,}/;
+		let lastDot = doubleDot.test(deleteNumbers);
+		if (lastDot==true){
+			summ.value = summ.value.slice(0,-1);
+		};
+	};
+	
+	//Проверяем первый символ, если он равен нулю и второй сивол равен цифре,то удаляем ноль
+	function checkFirstSimbolZero () 
+	{
+	let firstZero = summ.value[0]=="0";
+	let lastZero = summ.value[-1];
+	function checkSecondNumber (){
+		numbers.lastIndex = 0;
+		return numbers.test(summ.value[1]);
+	};
+	if
+	(firstZero==true&&checkSecondNumber()==true){
+		summ.value = summ.value.split('').splice(1,1);
+	}
+	};
+
+	//ограничиваем ввод с клавиатуры только для цифр и спецсиволов "+-*/."
+	document.oninput = function() {
+	summ.value = summ.value.replace (/[^\+-/*.\d]/g, '');
+	};
+	//Заменяем запятую на точку
+    function checkComma () { if
+		(summ.value.slice(-1) == ","){
+			summ.value=summ.value.replace (/[,]/g, '.');
+		}
+	}
+	
+	//выводим и суммируем цифры вместо замены в текстовом поле
+	[].forEach.call( butt, function(el) {
+    el.onclick = function(e) {
+		let pam = this.value;
+		summ.value = summ.value+pam;
+		checkLastSimbolTrue ();
+		checkFirstSimbolTrue ();
+		checkFirstSimbolZero ();
+		checkLastNumbers();
+		checkDotCount ();
+		}
+	});
+	
+	//очищаем поле при клике на кнопку "С"
+	let clearContent = document.getElementById('clear');
+    clearContent.onclick = function() {
+      summ.value = '';
+    };
+	
+	//переводим в цифровое значение и производим расчеты при клике на кнопку "="
+	function outResult() {
+		summ.value = eval(summ.value);
+    };
+	result.onclick =  eval(outResult);
+	
+	//при нажатии ентера считаем сумму  иначе фокусируем текстовое поле при нажатии на любую другую клавишу клавиатуры
+	addEventListener("keydown", function(event) {
+		if (event.keyCode == 13){
+			eval(outResult());
+		}
+		else{
+			summ.focus();
+			checkFirstSimbolTrue ();
+		}
+	});
+	addEventListener("keyup", function() {
+	
+	checkLastSimbolTrue ();
+	checkFirstSimbolZero ();
+	checkDotCount ();
+	checkComma ();
+	});
+	
+ })();
+};
+ </script>
+ </body>
+</html>
